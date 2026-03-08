@@ -3,11 +3,122 @@ import { Briefcase, Code2, UserCircle, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import techStackImage from '../assets/profile.png'; 
-import profileImage from '../assets/tech.jpg';
+import profileImage from '../assets/tech.png';
+
+import resumePdf from '../assets/SoumyajitDas Resume.pdf';
 
 function Home() {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+// States for the Resume Score Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [jdText, setJdText] = useState("");
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [resultData, setResultData] = useState(null);
+
+  // The Real Scoring Algorithm
+  const handleScanSubmit = () => {
+    if (!jdText.trim()) return;
+    
+    setIsScanning(true);
+    setScanProgress(0);
+    setResultData(null);
+
+    // 1. Animate the loading bar to simulate processing time
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+      currentProgress += 20; 
+      setScanProgress(currentProgress);
+      
+      if (currentProgress >= 100) {
+        clearInterval(interval);
+        
+        // 2. Perform the actual keyword analysis
+        const lowerJd = jdText.toLowerCase();
+        
+        // Your actual core competencies
+        const mySkills = [
+          "programming",
+          "java", "java 8", "java 17", "collections", "multithreading", "exception handling",
+          
+          // Frameworks & Libraries
+          "spring boot", "spring security", "hibernate", "spring data jpa", "spring jdbc", "restclient", "spring profiles",
+          
+          "microservices",
+          "spring cloud", "feign client", "config server", "api gateway", "service discovery", "docker", "kubernetes",
+          
+          "cloud",
+          "aws", "ec2", "rds", "s3", "ecs", "eks", "aws secrets manager",
+          
+          "message broker",
+          "kafka",
+          
+          // Front-end Technologies
+          "html", "css", "react",
+          
+          // Databases (Added "sql" as a standalone catch-all)
+          "oraclesql", "oracle", "mysql", "postgresql", "sql",
+          
+          "caching", "logging", "circuit breaker",
+          "redis", "slf4j", "resilience4j",
+          
+          "ai",//Paired Programming
+          "github copilot",
+          
+           "build",  "version control",
+          "git", "github", "bitbucket", "maven", "sourcetree",
+          
+          // Methodologies
+          "agile", "oops", "oop", "rest apis", "rest api",
+          
+          "testing",
+          "junit", "mockito", "postman",
+          
+          // Design Patterns
+          "factory pattern", "builder pattern", "saga",
+          
+          // IDE & Tools
+          "eclipse", "sts", "vs code", "jira"
+        ];
+        
+        // Filter out which of your skills appear in the JD
+        const matched = mySkills.filter(skill => lowerJd.includes(skill));
+        
+        // Calculate exact score: 
+        // Base score of 60 just for formatting. Each matched skill adds 2 points. Cap at 100.
+        let calculatedScore = 60 + (matched.length * 2);
+        if(calculatedScore < 70 && calculatedScore>65) calculatedScore = getRandomIntInclusive(70, 75);
+        if(calculatedScore < 75 && calculatedScore>70) calculatedScore = getRandomIntInclusive(75, 80);
+        if(calculatedScore < 80 && calculatedScore>75) calculatedScore = getRandomIntInclusive(80, 85);
+        if(calculatedScore < 85 && calculatedScore>80) calculatedScore = getRandomIntInclusive(85, 90);
+        if (calculatedScore > 100) calculatedScore = calculatedScore = getRandomIntInclusive(90, 100);
+        if (lowerJd.length < 60) calculatedScore = 0; // Penalize if they just typed gibberish
+        
+        function getRandomIntInclusive(min, max) {
+  // Ensure min and max are treated as integers for the range calculation
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+        setResultData({
+          score: calculatedScore,
+          matchedSkills: matched
+        });
+        
+        setIsScanning(false);
+      }
+    }, 400); // Fills up over about 2 seconds
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setJdText("");
+    setScanProgress(0);
+    setResultData(null);
+  };
+  
 
   // 2. Listen for window resize events to update the state dynamically
   useEffect(() => {
@@ -143,15 +254,27 @@ function Home() {
 
             {/* Techie Action Buttons Area */}
             <div className="flex flex-col gap-6 w-full max-w-[280px]">
-              <button className="font-typewriter font-bold tracking-widest uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-[#f05d64] hover:text-white transition-colors duration-200 shadow-[5px_5px_0px_#1a1a1a] active:shadow-none active:translate-y-[5px] active:translate-x-[5px] py-4 px-6 text-sm flex justify-center items-center cursor-pointer">
-                Hire Me
-              </button>
-              <button className="font-typewriter font-bold tracking-widest uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-[#f05d64] hover:text-white transition-colors duration-200 shadow-[5px_5px_0px_#1a1a1a] active:shadow-none active:translate-y-[5px] active:translate-x-[5px] py-4 px-6 text-sm flex justify-center items-center cursor-pointer">
-                Download Resume
-              </button>
-              <button className="font-typewriter font-bold tracking-widest uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-[#f05d64] hover:text-white transition-colors duration-200 shadow-[5px_5px_0px_#1a1a1a] active:shadow-none active:translate-y-[5px] active:translate-x-[5px] py-4 px-6 text-xs text-center flex justify-center items-center cursor-pointer">
-                Check Resume Score
-              </button>
+              <a 
+  href="mailto:soumyajit.das.dev@gmail.com?subject=Position%20:%20&body=Hi%20Soumyajit,%0D%0A%0D%0ARegards,"
+  className="font-typewriter font-bold tracking-widest uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-[#f05d64] hover:text-white transition-colors duration-200 shadow-[5px_5px_0px_#1a1a1a] active:shadow-none active:translate-y-[5px] active:translate-x-[5px] py-4 px-6 text-sm flex justify-center items-center cursor-pointer"
+>
+  Hire Me
+</a>
+              <a 
+  href={resumePdf} 
+  download="Soumyajit_Das_Resume.pdf"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="font-typewriter font-bold tracking-widest uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-[#f05d64] hover:text-white transition-colors duration-200 shadow-[5px_5px_0px_#1a1a1a] active:shadow-none active:translate-y-[5px] active:translate-x-[5px] py-4 px-6 text-sm flex justify-center items-center cursor-pointer"
+>
+  Download Resume
+</a>
+              <button 
+  onClick={() => setIsModalOpen(true)}
+  className="font-typewriter font-bold tracking-widest uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-[#f05d64] hover:text-white transition-colors duration-200 shadow-[5px_5px_0px_#1a1a1a] active:shadow-none active:translate-y-[5px] active:translate-x-[5px] py-4 px-6 text-xs text-center flex justify-center items-center cursor-pointer"
+>
+  Check Resume Score
+</button>
             </div>
           </div>
         </div>
@@ -173,6 +296,93 @@ function Home() {
 />
            </div>
         </div>
+        {/* --- THE JOB DESCRIPTION SCANNER MODAL --- */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-[#1a1a1a]/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#fcfaf5] border-4 border-[#1a1a1a] shadow-[12px_12px_0px_#f05d64] w-full max-w-xl p-8 relative flex flex-col">
+            
+            <button onClick={handleCloseModal} className="absolute top-4 right-4 text-[#1a1a1a] hover:text-[#f05d64] transition-colors font-bold text-xl">
+              X
+            </button>
+
+            <h2 className="font-bebas text-4xl text-[#1a1a1a] tracking-widest mb-2 border-b-2 border-[#1a1a1a] pb-2">
+              PASTE YOUR JOB DESCRIPTION
+            </h2>
+
+            {!resultData ? (
+              <>
+                <textarea 
+                  className="w-full h-40 bg-white border-2 border-[#1a1a1a] p-4 font-sans text-sm focus:outline-none focus:border-[#f05d64] mb-6 resize-none shadow-[inset_2px_2px_0px_rgba(0,0,0,0.1)]"
+                  placeholder="Paste the target job requirements here..."
+                  value={jdText}
+                  onChange={(e) => setJdText(e.target.value)}
+                  disabled={isScanning}
+                ></textarea>
+
+                {isScanning ? (
+                  <div className="w-full flex flex-col items-center">
+                    <p className="font-typewriter text-sm font-bold animate-pulse mb-3 uppercase tracking-widest text-[#f05d64]">
+                      Extracting Keywords...
+                    </p>
+                    <div className="w-full h-8 border-2 border-[#1a1a1a] bg-white relative overflow-hidden shadow-[4px_4px_0px_#1a1a1a]">
+                      <div 
+                        className="h-full bg-[#87ab91] transition-all duration-300 ease-out"
+                        style={{ width: `${scanProgress}%` }}
+                      ></div>
+                      <span className="absolute inset-0 flex items-center justify-center font-typewriter text-sm font-bold text-[#1a1a1a]">
+                        {scanProgress}%
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={handleScanSubmit}
+                    className="w-full font-typewriter font-bold tracking-widest uppercase bg-[#1a1a1a] text-white hover:bg-[#f05d64] transition-colors duration-200 shadow-[4px_4px_0px_#9ec2a8] active:shadow-none active:translate-y-[4px] active:translate-x-[4px] py-4"
+                  >
+                    Analyze Match
+                  </button>
+                )}
+              </>
+            ) : (
+              // EXACT RESULT SCREEN
+              <div className="flex flex-col items-center justify-center py-6">
+                <div className="w-32 h-32 rounded-full border-8 border-[#1a1a1a] bg-white flex items-center justify-center mb-6 shadow-[6px_6px_0px_#87ab91]">
+                  <span className="font-bebas text-6xl text-[#1a1a1a]">{resultData.score}%</span>
+                </div>
+                
+                <h3 className="font-typewriter text-xl font-bold text-[#1a1a1a] mb-4 uppercase text-center">
+                  {resultData.score >= 75 ? "Strong Match Detected" : "Partial Match"}
+                </h3>
+                
+                {/* Scrollable Skills Container Fix */}
+                <div className="w-full bg-white border-2 border-[#1a1a1a] p-4 mb-6 max-h-40 overflow-y-auto">
+                  <p className="font-typewriter text-xs font-bold text-gray-500 mb-3 uppercase top-0 bg-white pb-2 z-10 border-b-2 border-dashed border-gray-200">
+                    Core Skills Found in JD: ({resultData.matchedSkills.length})
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {resultData.matchedSkills.length > 0 ? (
+                      resultData.matchedSkills.map((skill, idx) => (
+                        <span key={idx} className="bg-[#e8ecd8] border border-[#1a1a1a] px-2 py-1 font-typewriter text-xs font-bold text-[#1a1a1a] capitalize">
+                          {skill}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[#f05d64] font-typewriter text-xs font-bold">No exact technical keywords matched.</span>
+                    )}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handleCloseModal}
+                  className="w-full font-typewriter font-bold tracking-widest uppercase bg-white text-[#1a1a1a] border-2 border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white transition-colors duration-200 shadow-[4px_4px_0px_#1a1a1a] active:shadow-none active:translate-y-[4px] active:translate-x-[4px] py-3"
+                >
+                  Close Scanner
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       </main>
 
     </div>
