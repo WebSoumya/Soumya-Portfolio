@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.scalloped-edge {
+  background-image: radial-gradient(circle at 12px 0px, transparent 12px, #fcfaf5 13px);
+  background-size: 24px 20px;
+  background-repeat: repeat-x;
+  background-position: top;
+  height: 20px;
+  width: 100%;
+  position: absolute;
+  top: -19px;
+  transform: rotate(180deg);
+  z-index: 10;
+}
